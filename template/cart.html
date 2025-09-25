@@ -1,0 +1,152 @@
+{% load cart_tag %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Shopping Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f6f6f6;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .cart-container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .cart-item img {
+            width: 100px;
+            height: auto;
+            margin-right: 20px;
+            border-radius: 4px;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-details strong {
+            font-size: 18px;
+        }
+
+        .cart-actions a {
+            margin: 0 5px;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .cart-actions a:hover {
+            background: #0056b3;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+        }
+
+        .cart-footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .cart-footer a {
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 10px 18px;
+            background: #dc3545;
+            color: white;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .cart-footer a:hover {
+            background: #c82333;
+        }
+
+        .continue-link {
+            background: #28a745 !important;
+        }
+
+        .continue-link:hover {
+            background: #218838 !important;
+        }
+
+        .totalamount{
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        function confirmClearCart() {
+            return confirm("Are you sure you want to clear the entire cart?");
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Your Cart</h1>
+
+    <div class="cart-container">
+        <p><strong>Total items:</strong> {{ request.session.cart|length }}</p>
+
+        {% if request.session.cart %}
+            {% for key, value in request.session.cart.items %}
+            <div class="cart-item">
+                <img src="{{ value.image }}" alt="{{ value.name }}">
+                <div class="cart-item-details">
+                    <strong>{{ value.name }}</strong><br>
+                    Price: ${{ value.price }} × Quantity: {{ value.quantity }}<br>
+                    Total: ${{ value.price|multiply:value.quantity }}
+                </div>
+                <div class="cart-actions">
+                    <a href="{% url 'item_increment' key %}">+</a>
+                    <a href="{% url 'item_decrement' key %}">−</a>
+                    <a href="{% url 'item_clear' key %}">Remove</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-message">
+                <p>Your cart is empty.</p>
+            </div>
+        {% endif %}
+
+        <div class="totalamount">
+            <h4>Your Total Amount = ${{cart_total_amount}}</h4>
+        </div>
+
+        <div class="cart-footer">
+            {% if request.session.cart %}
+                <a href="{% url 'cart_clear' %}" onclick="return confirmClearCart();">Clear Cart</a>
+            {% endif %}
+            <a href="{% url 'index' %}" class="continue-link">Continue Shopping</a>
+        </div>
+    </div>
+</body>
+</html>
